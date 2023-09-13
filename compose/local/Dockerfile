@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libpq-dev
 
 # Requirements are installed here to ensure they will be cached.
-COPY ./src/comm_workers/requirements .
+COPY ./requirements .
 
 # Create Python Dependency and Sub-Dependency Wheels.
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
@@ -24,7 +24,7 @@ RUN pip wheel --wheel-dir /usr/src/app/wheels  \
 FROM python as python-run-stage
 
 ARG BUILD_ENVIRONMENT=production
-ARG APP_HOME=/src/comm_workers
+ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -50,11 +50,15 @@ COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
 	&& rm -rf /wheels/
 
-COPY ./compose/local/worker/start /start
+COPY ./compose/${BUILD_ENVIRONMENT}/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
+COPY ./compose/${BUILD_ENVIRONMENT}/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
 # copy application code to WORKDIR
-COPY ./src/comm_workers ${APP_HOME}
+COPY ./src/ ${APP_HOME}
 
 ENTRYPOINT ["/entrypoint"]
