@@ -56,24 +56,24 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.TOKEN }}
 
-      - name: Build movix-admin:latest Docker image
+      - name: Build latest Docker image
         uses: docker/build-push-action@v4
         with:
           file: "./compose/production/Dockerfile"
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/stranded-in-python/movix-notification-api:latest
+            ghcr.io/stranded-in-python/movix-notification-etl:latest
           labels: |
             maintainer=${{ github.actor }}
             build-date=${{ github.event.head_commit.timestamp }}
 
-      - name: Build movix-admin:dev Docker image
+      - name: Build dev Docker image
         uses: docker/build-push-action@v4
         with:
           file: "./compose/local/Dockerfile"
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/stranded-in-python/movix-notification-api:dev
+            ghcr.io/stranded-in-python/movix-notification-etl:dev
           labels: |
             maintainer=${{ github.actor }}
             build-date=${{ github.event.head_commit.timestamp }}
