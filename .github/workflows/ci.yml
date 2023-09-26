@@ -1,4 +1,4 @@
-name: "CI: Notif-API"
+name: "CI: Notif-ETL"
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
